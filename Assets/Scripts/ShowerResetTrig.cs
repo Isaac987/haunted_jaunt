@@ -6,6 +6,16 @@ public class ShowerResetTrig : MonoBehaviour
 {
     public GameObject ShowerGhost;
     public ParticleSystem particleSystem;
+    public AudioClip soundEffect;
+    private AudioSource audioSource;
+
+
+    void Start()
+    {
+        // Get AudioSource component attached to this GameObject
+        audioSource = GetComponent<AudioSource>();
+        audioSource = gameObject.AddComponent<AudioSource>();
+    }
 
     void OnTriggerEnter(Collider other)
     {
@@ -13,6 +23,7 @@ public class ShowerResetTrig : MonoBehaviour
         {
              particleSystem.Play();
             // Toggle the visibility of the MeshRenderer
+            audioSource.PlayOneShot(soundEffect);
             ShowerGhost.GetComponent<SkinnedMeshRenderer>().enabled = true;
             ShowerFlag.Flag = true;
         }

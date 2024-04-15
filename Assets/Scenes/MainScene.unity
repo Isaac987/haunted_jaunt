@@ -6758,6 +6758,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowerGhost: {fileID: 407181415}
   particleSystem: {fileID: 62383329}
+  soundEffect: {fileID: 8300000, guid: c3a23fbc86df374419642bd21333269b, type: 3}
 --- !u!1 &1097064621 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1288536327849997621, guid: 549c69af39b84624b8a053537c407def,
@@ -6822,7 +6823,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particleSystem: {fileID: 62383329}
   ShowerGhost: {fileID: 407181415}
-  soundEffect: {fileID: 8300000, guid: bb273f4ade3d75245919416e63ea232c, type: 3}
+  soundEffect: {fileID: 8300000, guid: 559fd273ce13ed04b9f7d26d90b19190, type: 3}
 --- !u!136 &1167960462
 CapsuleCollider:
   m_ObjectHideFlags: 0
