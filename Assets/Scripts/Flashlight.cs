@@ -4,6 +4,7 @@ using UnityEngine;
 public class Flashlight : MonoBehaviour
 {
     public GameObject nearestEnemy;
+    public float speed = 5.0f;
     private GameObject[] enemies;
 
     // Start is called before the first frame update
@@ -13,7 +14,7 @@ public class Flashlight : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         float nearestDistance = 10000;
 
@@ -23,16 +24,23 @@ public class Flashlight : MonoBehaviour
             if (distance < nearestDistance) {
                 nearestDistance = distance;
                 nearestEnemy = enemy;
-
             }
         }
 
-        Vector3 direction = (nearestEnemy.transform.position - transform.position);
-        float dot = Vector3.Dot(Vector3.forward, direction.normalized);
+        Vector3 direction = (nearestEnemy.transform.position - transform.position).normalized;
+        float dot = Vector3.Dot(Vector3.forward, direction);
 
         // Enemy can see you
         if (dot < 0.0f) {
-            transform.LookAt(new Vector3(nearestEnemy.transform.position.x, transform.position.y, nearestEnemy.transform.position.z));
+
+            // Rotate towards the enemy
+            Quaternion toRotation = Quaternion.LookRotation(new Vector3(direction.x, 0.0f, direction.z));
+            transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, speed * Time.deltaTime);
+        } else {
+
+            // Rotate towards the parent forward position
+            Quaternion parentRotation = Quaternion.LookRotation(new Vector3(transform.parent.forward.x, 0.0f, transform.parent.forward.z));
+            transform.rotation = Quaternion.Lerp(transform.rotation, parentRotation, speed * Time.deltaTime);
         }
     }
 }
