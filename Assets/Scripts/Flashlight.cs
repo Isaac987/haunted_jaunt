@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class Flashlight : MonoBehaviour
 {
-    public GameObject nearestEnemy;
-    public float speed = 5.0f;
+    public float rotationSpeed = 5.0f;
     private GameObject[] enemies;
 
     // Start is called before the first frame update
@@ -13,34 +12,42 @@ public class Flashlight : MonoBehaviour
         enemies = GameObject.FindGameObjectsWithTag("Enemy");
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        float nearestDistance = 10000;
+    GameObject GetNearestEnemy() {
+        GameObject nearestEnemy = enemies[0];
+
+        // Set the nearest enemey distance to some large number so it updates correctly
+        float nearestDistance = float.MaxValue;
 
         foreach (GameObject enemy in enemies) {
-            float distance = Vector3.Distance(this.transform.position, enemy.transform.position);
 
-            if (distance < nearestDistance) {
-                nearestDistance = distance;
+            // We don't care about distance, just which ghost is closer
+            float squaredDistance = Vector3.SqrMagnitude(this.transform.position - enemy.transform.position);
+
+            if (squaredDistance < nearestDistance) {
+                nearestDistance = squaredDistance;
                 nearestEnemy = enemy;
             }
         }
 
+        return nearestEnemy;
+    }
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        GameObject nearestEnemy = GetNearestEnemy();
+
+        // Get the direction vector and ignore the y-axis so this rotates in a circle
         Vector3 direction = (nearestEnemy.transform.position - transform.position).normalized;
-        float dot = Vector3.Dot(Vector3.forward, direction);
+        direction.y = 0.0f;
 
-        // Enemy can see you
-        if (dot < 0.0f) {
+        // Standard angle calculation
+        float dot = Vector3.Dot(transform.forward.normalized, direction);
+        float angle = Mathf.Rad2Deg * Mathf.Acos(dot);
+        Vector3 cross = Vector3.Cross(transform.forward.normalized, direction);
 
-            // Rotate towards the enemy
-            Quaternion toRotation = Quaternion.LookRotation(new Vector3(direction.x, 0.0f, direction.z));
-            transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, speed * Time.deltaTime);
-        } else {
-
-            // Rotate towards the parent forward position
-            Quaternion parentRotation = Quaternion.LookRotation(new Vector3(transform.parent.forward.x, 0.0f, transform.parent.forward.z));
-            transform.rotation = Quaternion.Lerp(transform.rotation, parentRotation, speed * Time.deltaTime);
-        }
+        // Quaternion magic and LERP
+        Quaternion rotation = Quaternion.AngleAxis(angle, cross);
+        transform.rotation = Quaternion.Lerp(transform.rotation, rotation * transform.rotation, Time.deltaTime * rotationSpeed);
     }
 }
